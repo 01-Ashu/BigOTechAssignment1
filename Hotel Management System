@@ -1,0 +1,254 @@
+//Hotel Management System 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
+class NormalUser {  //have data of a user
+    public int id;
+    public String name;
+    public String password;
+    public String email;
+
+    public NormalUser(int id, String name, String password, String email) {
+        this.id = id;
+        this.name = name;
+        this.password = password;
+        this.email = email;
+    }
+
+    public void modifyDetails(String newEmail) {  //modifying email of user
+        this.email = newEmail;
+        System.out.println("User details updated");
+    }
+}
+
+class Booking {  //have all details needed while booking
+    public String bookingId;
+    public String userId;
+    public String hotelId;
+    public String checkinDate;
+    public String checkoutDate;
+    public String status;
+
+    public Booking(String bookingId, String userId, String hotelId, String checkinDate, String checkoutDate) {
+        this.bookingId = bookingId;
+        this.userId = userId;
+        this.hotelId = hotelId;
+        this.checkinDate = checkinDate;
+        this.checkoutDate = checkoutDate;
+        this.status = "Pending";
+    }
+
+    public void getBookingStatus() {  //to check booking status
+        System.out.println("Booking ID: " + bookingId + " Status: " + status);
+    }
+}
+
+class Feedback {  //have all things needed to give feedback
+    public String feedbackId;
+    public String userId;
+    public String hotelId;
+    public int rating;
+    public String comments;
+
+    public Feedback(String feedbackId, String userId, String hotelId, int rating, String comments) {
+        this.feedbackId = feedbackId;
+        this.userId = userId;
+        this.hotelId = hotelId;
+        this.rating = rating;
+        this.comments = comments;
+    }
+
+    public static void getFeedback(List<Feedback> feedbacks, String hotelId) {  //function to getfeedback
+        for (Feedback feedback : feedbacks) {
+            if (feedback.hotelId.equals(hotelId)) {
+                System.out.println("Feedback: " + feedback.comments + " ,Rating " + feedback.rating);
+            }
+        }
+    }
+}
+
+class Hotel {  //have all things about a hotel
+    public String hotelId;
+    public String name;
+    public String location;
+    public int numberOfRooms;
+    public List<String> facilities;
+    public String status;
+
+    public Hotel(String hotelId, String name, String location, int numberOfRooms, List<String> facilities) {
+        this.hotelId = hotelId;
+        this.name = name;
+        this.location = location;
+        this.numberOfRooms = numberOfRooms;
+        this.facilities = facilities;
+        this.status = "pending";
+    }
+}
+
+class UserService {   
+    private List<NormalUser> users;  //has a relationship
+
+    public UserService(List<NormalUser> users) {
+        this.users = users;
+    }
+
+    public void registerUser(int id, String uname, String pwd, String mail) { //function to register a user
+        users.add(new NormalUser(id, uname, pwd, mail));
+        System.out.println("User Registered");
+    }
+
+    public void modifyUserDetails(int userId, String newEmail) {   //modifyingUser details
+        for (NormalUser user : users) {
+            if (user.id == userId) {
+                user.modifyDetails(newEmail);
+                return;
+            }
+        }
+        System.out.println("User not found");
+    }
+
+    public void deleteUser(int userId) {  //deleting a particular user
+        users = users.stream()
+                .filter(user -> user.id != userId)
+                .collect(Collectors.toList());
+        System.out.println("User deleted");
+    }
+}
+
+class HotelService {  
+    private List<Hotel> hotels;  //has a relationship of hotel
+
+    public HotelService(List<Hotel> hotels) {
+        this.hotels = hotels;
+    }
+
+    //function to add hotel
+    public void addHotel(String hotelId, String name, String location, int numberOfRooms, List<String> facilities) {
+        hotels.add(new Hotel(hotelId, name, location, numberOfRooms, facilities));
+        System.out.println("Hotel Added");
+    }
+
+    //function to update hotel
+    public void updateHotel(String hotelId, String newName, String newLocation, int newRooms, List<String> newFacilities) {
+        for (Hotel hotel : hotels) {
+            if (hotel.hotelId.equals(hotelId)) {
+                hotel.name = newName;
+                hotel.location = newLocation;
+                hotel.numberOfRooms = newRooms;
+                hotel.facilities = newFacilities;
+                System.out.println("Hotel details updated");
+                return;
+            }
+        }
+        System.out.println("Hotel not found");
+    }
+
+    //displaying all hotels
+    public void listHotels() {
+        for (Hotel hotel : hotels) {
+            System.out.println("Hotel ID: " + hotel.hotelId + ", Name: " + hotel.name + ", Location: " + hotel.location + ", Rooms: " + hotel.numberOfRooms);
+        }
+    }
+}
+
+class FeedbackService { //class to manage feedback 
+    private List<Feedback> feedbacks;  //has a relationship of feedback
+
+    public FeedbackService(List<Feedback> feedbacks) {
+        this.feedbacks = feedbacks;
+    }
+
+    //function to submit feedback
+    public void submitFeedback(String feedbackId, String userId, String hotelId, int rating, String comments) {
+        feedbacks.add(new Feedback(feedbackId, userId, hotelId, rating, comments));
+        System.out.println("Feedback Submitted");
+    }
+
+    //function to get feedback
+    public void getFeedback(String hotelId) {
+        Feedback.getFeedback(feedbacks, hotelId);
+    }
+}
+
+//Class to manage Booking
+class BookingService {
+    private List<Booking> bookings; //has a relationship of Booking Class
+
+    public BookingService(List<Booking> bookings) {
+        this.bookings = bookings;
+    }
+
+    //function to booking a room
+    public void bookRoom(String bookingId, String userId, String hotelId, String checkIn, String checkOut) {
+        bookings.add(new Booking(bookingId, userId, hotelId, checkIn, checkOut));
+        System.out.println("Room Booked for User " + userId + " at hotel " + hotelId);
+    }
+
+    //function to get booking status
+    public void getBookingStatus(String bookingId) {
+        for (Booking b : bookings) {
+            if (b.bookingId.equals(bookingId)) {
+                b.getBookingStatus();
+                return;
+            }
+        }
+        System.out.println("No Booking Found");
+    }
+}
+
+//Main HotelManagementSystem class to access entire system
+class HotelManagementSystem {
+    private List<NormalUser> users = new ArrayList<>();
+    private List<Booking> bookings = new ArrayList<>();
+    private List<Feedback> feedbacks = new ArrayList<>();
+    private List<Hotel> hotels = new ArrayList<>();
+
+    private UserService userService = new UserService(users);
+    private BookingService bookingService = new BookingService(bookings);
+    private FeedbackService feedbackService = new FeedbackService(feedbacks);
+    private HotelService hotelService = new HotelService(hotels);
+
+    public UserService getUserService() { return userService; }
+
+    public BookingService getBookingService() { return bookingService; }
+
+    public FeedbackService getFeedbackService() { return feedbackService; }
+
+    public HotelService getHotelService() { return hotelService; }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        HotelManagementSystem hms = new HotelManagementSystem(); //singleton class object
+
+        // Register a new user
+        String uname = "sid_mish";
+        String pwd = "4105";
+        String email = "sidmish007@gmail.com";
+        hms.getUserService().registerUser(1, uname, pwd, email);
+
+        // Modify user details
+        String newEmail = "sidnew007@gmail.com";
+        hms.getUserService().modifyUserDetails(1, newEmail);
+
+        // Book a room for the user
+        String bookingId = "B001";
+        String hotelId = "H001";
+        String checkIn = "2024-06-01";
+        String checkOut = "2024-06-05";
+        hms.getBookingService().bookRoom(bookingId, "1", hotelId, checkIn, checkOut);
+
+        // Check booking status
+        hms.getBookingService().getBookingStatus(bookingId);
+
+        // Submit feedback for the hotel
+        String feedbackId = "F001";
+        int rating = 5;
+        String comments = "Excellent service!";
+        hms.getFeedbackService().submitFeedback(feedbackId, "1", hotelId, rating, comments);
+
+        // Retrieve feedback for the hotel
+        hms.getFeedbackService().getFeedback(hotelId);
+    }
+}
